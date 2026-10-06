@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>아기 준비물</title>
+<meta name="description" content="출산·육아 준비물을 분류별로 체크하고 직접 고쳐 쓰는 체크리스트">
+<meta name="theme-color" content="#3f7a6d">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="아기 준비물">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=IBM+Plex+Sans+KR:wght@400;500;600&display=swap">
+<style>
+/* Layout: one narrow column, sticky search + filter bar, category groups of tappable rows, bottom sheets for editing and settings */
+:root{
+  --bg:#f5f6f2; --surface:#ffffff; --fg:#26302c; --muted:#6c7771; --line:#e1e5de;
+  --accent:#3f7a6d; --on-accent:#ffffff; --accent-soft:#e3efe9; --warm:#b86f4c; --warm-soft:#f6e9e1; --done:#9aa39e;
+  --display:'Gowun Dodum','IBM Plex Sans KR',system-ui,sans-serif;
+  --body:'IBM Plex Sans KR',system-ui,-apple-system,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#161b19; --surface:#1f2623; --fg:#e6ebe7; --muted:#9aa6a0; --line:#2f3834;
+  --accent:#7fc0ae; --on-accent:#10201b; --accent-soft:#233a33; --warm:#e0a07f; --warm-soft:#3a2a22; --done:#66706b; color-scheme:dark}}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.45;padding-top:env(safe-area-inset-top,0px)}
+.wrap{max-width:720px;margin:0 auto;padding-inline:16px;padding-block:18px 110px}
+.top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+h1{font-family:var(--display);font-weight:400;font-size:1.7rem;margin:0;text-wrap:balance}
+.icon-btn{flex:none;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:12px;padding:7px 12px;font:inherit;font-size:.85rem;cursor:pointer}
+.sum{display:flex;gap:14px;flex-wrap:wrap;color:var(--muted);font-size:.85rem;margin-top:6px;font-variant-numeric:tabular-nums}
+.sum b{color:var(--fg);font-weight:600}
+.bar{height:6px;background:var(--line);border-radius:3px;margin-top:10px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.hint{margin-top:12px;background:var(--accent-soft);color:var(--fg);border-radius:12px;padding:10px 12px;font-size:.85rem;display:flex;gap:10px;align-items:flex-start}
+.hint p{margin:0;flex:1;min-width:0}
+.hint button{flex:none;border:0;background:none;color:var(--muted);font:inherit;cursor:pointer;padding:0 2px}
+.hint .go{color:var(--accent);font-weight:600}
+.tools{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:10px;display:grid;gap:8px;border-bottom:1px solid var(--line);margin-top:8px}
+.search{display:flex;gap:8px;align-items:center}
+.search input{flex:1;min-width:0}
+input,select,textarea{font:inherit;font-size:16px;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:9px 11px;width:100%}
+input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:999px;padding:5px 12px;font:inherit;font-size:.85rem;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.toggle{flex:none;display:flex;align-items:center;gap:6px;font-size:.85rem;color:var(--muted);white-space:nowrap}
+.toggle input{width:auto}
+section{margin-top:18px}
+.ch{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:6px}
+.ch h2{font-family:var(--display);font-weight:400;font-size:1.2rem;margin:0}
+.ch span{font-size:.8rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.list{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.row{display:flex;gap:10px;align-items:flex-start;padding:11px 12px;border-top:1px solid var(--line)}
+.row:first-child{border-top:0}
+.ck{flex:none;width:26px;height:26px;border-radius:8px;border:2px solid var(--line);background:transparent;cursor:pointer;display:grid;place-items:center;margin-top:0;color:var(--on-accent);font-size:15px;padding:0}
+.ck[aria-checked="true"]{background:var(--accent);border-color:var(--accent)}
+.main{flex:1;min-width:0;cursor:pointer;background:none;border:0;text-align:left;font:inherit;color:inherit;padding:0}
+.nm{font-weight:500}
+.row.done .nm{color:var(--done);text-decoration:line-through}
+.meta{font-size:.82rem;color:var(--muted);margin-top:2px;display:flex;flex-wrap:wrap;gap:4px 10px;font-variant-numeric:tabular-nums}
+.tag{display:inline-block;font-size:.72rem;border-radius:6px;padding:0 6px;margin-left:6px;vertical-align:1px;background:var(--accent-soft);color:var(--accent)}
+.when{color:var(--warm)}
+.tip{font-size:.8rem;color:var(--muted);margin-top:4px;background:var(--bg);border-radius:8px;padding:4px 8px}
+.addrow{display:block;width:100%;border:0;border-top:1px dashed var(--line);background:none;color:var(--accent);font:inherit;font-size:.88rem;padding:10px 12px;text-align:left;cursor:pointer}
+.fab{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));background:var(--accent);color:var(--on-accent);border:0;border-radius:999px;padding:13px 19px;font:inherit;font-weight:600;box-shadow:0 4px 14px rgba(0,0,0,.18);cursor:pointer}
+.status{font-size:.85rem;color:var(--muted);text-align:center;padding:30px 0}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(76px + env(safe-area-inset-bottom,0px));background:var(--fg);color:var(--bg);border-radius:10px;padding:9px 14px;font-size:.88rem;z-index:40;max-width:calc(100% - 32px)}
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.38);z-index:20;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--surface);width:100%;max-width:560px;border-radius:18px 18px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom,0px));max-height:90%;overflow:auto}
+.sheet h3{font-family:var(--display);font-weight:400;font-size:1.25rem;margin:0 0 12px}
+.sheet h4{font-size:.9rem;margin:18px 0 6px}
+.sheet p.small{font-size:.82rem;color:var(--muted);margin:4px 0 0}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid .full{grid-column:1/-1}
+label.f{display:grid;gap:4px;font-size:.8rem;color:var(--muted);min-width:0}
+.acts{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+.btn{font:inherit;border-radius:10px;padding:10px 14px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:var(--on-accent);flex:1;font-weight:600}
+.btn.del{color:var(--warm)}
+.confirm{margin-top:10px;padding:10px;border-radius:10px;background:var(--warm-soft);font-size:.85rem;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.stack{display:grid;gap:8px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="top">
+      <h1>아기 준비물</h1>
+      <button class="icon-btn" id="settingsBtn" type="button">설정</button>
+    </div>
+    <div class="sum" id="sum"></div>
+    <div class="bar"><i id="bar"></i></div>
+    <div class="hint" id="installHint" hidden></div>
+  </header>
+  <div class="tools">
+    <div class="search">
+      <input id="q" type="search" placeholder="품목·브랜드·메모 검색" aria-label="검색">
+      <label class="toggle"><input id="onlyTodo" type="checkbox"> 안 산 것만</label>
+    </div>
+    <div class="chips" id="chips" role="toolbar" aria-label="분류"></div>
+  </div>
+  <main id="out"></main>
+</div>
+<button class="fab" id="fab" type="button">+ 품목 추가</button>
+<div id="sheetHost"></div>
+
+<script>
+const TEMPLATE={"cats":["병원","영양제","의류","침구류","수유용품","이유식 용품","산모용품","위생용품","목욕용품","아기용품","세탁용품","육아장비","장난감","기타"],"items":[[0,"난황 확인","출산 10M 전","0~8주 난황 확인"],[0,"초진","출산 9M 전","난황 확인 후 2주 내 재검사"],[0,"임신 초기 검사","출산 8M 전","출산까지 꾸준하게 다닐 산부인과 결정 필요"],[0,"산후 조리원 예약","출산 8M 전","최소 8주 이후부터 예약 가능 (미리 알아보기)"],[0,"태아 보험","출산 7M 전","12주차 1차 기형아 검사 전까지 가입 필수"],[0,"12주차 진료","출산 8M 전","1차 기형아 검사"],[0,"16주차 진료","출산 7M 전","2차 기형아 검사, B형간염 주사"],[0,"20주차 진료","출산 6M 전","정밀 초음파, B형 간염 주사"],[0,"24주차 진료","출산 5M 전"],[0,"26주차 진료","출산 4M 전"],[1,"엽산","출산 10M 전","난황 확인 후 바로 보건소 방문 후 수령"],[1,"비타민D","출산 9M 전"],[1,"유산균","출산 9M 전"],[1,"철분제","출산 6M 전","16주 이후부터 섭취 (산부인과 진료 따라서 복용)"],[2,"배냇 저고리"],[2,"내복"],[2,"외출복"],[2,"겉싸개"],[2,"속싸개"],[2,"턱받이"],[2,"양말"],[2,"손싸개"],[2,"우주복(외출용)"],[2,"바디슈트(실내용)"],[2,"모자"],[2,"수면 조끼"],[2,"스와들업"],[2,"스와들 밴드"],[3,"모로반사 이불"],[3,"라라스 베개"],[3,"태열 베개"],[3,"짱구 베개"],[3,"옆잠 베개"],[3,"두상 베개"],[3,"역류방지 쿠션","","필수 아님"],[3,"기갈대","","뒤집기 시작하면 사용 못하니 당근 추천"],[3,"기갈대 방수패드"],[3,"침대 방수패드"],[3,"침대 패드"],[3,"침대 가드"],[3,"블랭킷"],[3,"아기 원목침대","출산 7M 전","사용 기간 짧으니 당근 추천"],[3,"원형러그"],[3,"아기 일반침대"],[3,"아기 이불"],[3,"방수요(대)"],[3,"방수요(소)"],[3,"백색 소음기"],[4,"분유 쉐이커","","꿈비, 알리것도 좋았어요"],[4,"분유 포트","","아이닉, 릴리브, 보르르  세개 다 좋았어요"],[4,"수유등"],[4,"젖병 거치대"],[4,"젖병 솔"],[4,"젖병 집게"],[4,"쪽쪽이","출산 5M 전"],[4,"쪽쪽이 클립","출산 5M 전","모윰, 스와비넥스, 필립스 다 잘물었어요"],[4,"젖병(160ml) + 젖꼭지"],[4,"젖병(240ml)","","저는 더블하트 구매했는데 입작은 아기라 고생했어요"],[4,"젖병 소독기","출산 6M 전"],[4,"수유 시트"],[4,"분유 제조기"],[4,"보온병"],[4,"수유 의자","출산 9M 전"],[4,"수유 쿠션 (모유용)"],[4,"1단계 분유 (신생아)"],[4,"2단계 분유 (후기용)"],[4,"3단계 분유 (성장기)"],[4,"휴대용 보틀 워머"],[4,"분유 케이스"],[4,"유축기"],[4,"유축 깔대기"],[4,"모유 저장팩"],[4,"수유 손목 보호대"],[5,"이유식 냄비"],[5,"이유식 마스터기"],[5,"이유식 저울"],[5,"이유식 용기"],[5,"흡착 식판"],[5,"초기 이유식 스푼"],[5,"유아식 수저 세트"],[5,"이유식 턱받이"],[5,"과즙망"],[5,"하이체어+베이비세트"],[5,"하이체어+뉴본 세트"],[5,"트리트랩 뉴본커버"],[5,"하이체어+이유식 받침대"],[6,"수유 브라"],[6,"수유 나시"],[6,"비데 티슈"],[6,"수면 양말"],[6,"맘스 안심팬티"],[6,"임산부 속옷","출산 7M 전"],[6,"손목 보호대","출산 10M 전"],[6,"압박 스타킹"],[6,"산전 복대"],[6,"산후 복대"],[6,"수유 패드"],[6,"유두 보호 크림"],[6,"임산부 안전벨트","출산 9M 전"],[6,"튼살 크림","출산 9M 전"],[6,"튼살 오일","출산 9M 전"],[6,"임산부 바디필로우","출산 8M 전"],[6,"회음부 도넛 방석","출산 6M 전"],[6,"산모 좌욕기"],[6,"산모 패드"],[6,"수유 크림"],[6,"유두 보호기"],[6,"가슴 진정팩"],[6,"종아리 압박 밴드"],[6,"임산부 칫솔/치약"],[6,"임산부 손세정제"],[7,"엠보 손수건"],[7,"거즈 손수건"],[7,"천 기저귀"],[7,"위생 물티슈"],[7,"알콜솜 / 소독티슈"],[7,"콧물 흡입기"],[7,"소독 스프레이"],[7,"가습기"],[7,"제습기"],[7,"공기청정기"],[7,"배꼽 면봉"],[7,"오일 면봉"],[7,"점착 면봉"],[7,"손톱 깎이"],[7,"건티슈"],[7,"멸균 구강 티슈"],[8,"신생아 욕조 2개"],[8,"유아 욕조"],[8,"탕온계"],[8,"샤워기 거치대"],[8,"유아 샤워 핸들"],[8,"엉덩이 클렌저"],[8,"로션"],[8,"크림"],[8,"바스 앤 샴푸"],[8,"진정 수딩젤"],[8,"아기 수전 + 필터"],[8,"아기 비데"],[8,"핑거 칫솔"],[8,"유아 칫솔"],[8,"유아 치약"],[8,"핸드 워시"],[8,"목욕 스펀지"],[9,"온/습도계"],[9,"디데이 달력"],[9,"체온계"],[9,"신생아 기저귀 (밴드형)"],[9,"기저귀 (팬티형)"],[9,"아기 영양제"],[9,"비판텐"],[9,"발진 크림"],[9,"기저귀 향균 봉투"],[9,"아기 수딩젤"],[9,"아기 수딩밤"],[9,"신생아 비누"],[9,"베이비 오일"],[9,"베이비 파우더"],[9,"세럼"],[10,"유아세탁세제"],[10,"아기세탁망"],[10,"열탕냄비"],[10,"젖병세제"],[10,"이염방지 시트"],[10,"욕실 세정제"],[10,"분유포트 세정제"],[11,"가습기"],[11,"아기띠"],[11,"슬링"],[11,"트롤리"],[11,"절충형 유모차"],[11,"휴대용 유모차"],[11,"차량용 햇빛가리개"],[11,"차 시트 보호 매트"],[11,"바구니 카시트"],[11,"카시트"],[11,"차량용 후방 거울"],[11,"바운서"],[11,"기저귀 가방"],[12,"튤립 사운드북"],[12,"꼬꼬맘"],[12,"아기체육관"],[12,"에듀테이블"],[12,"아기병풍"],[12,"딸랑이","","딸랑이는 입에 넣어서 구매 추천"],[12,"타이니 모빌"],[12,"초점책"],[12,"치발기"],[12,"헝겊책","","헝겊책은 입에 넣어서 구매 추천"],[12,"쏘서"],[12,"점퍼루"],[12,"보행 완구"],[12,"걸음마 보조기"],[12,"무릎 보호대"],[13,"쓰레기통"],[13,"구연산"],[13,"식염수"],[13,"이불 건조대"],[13,"홈캠"],[13,"층간소음매트"],[13,"임신 출산 대백과","출산 9M 전"],[13,"베이비룸"],[13,"안전문"],[13,"모서리 보호대"],[13,"콘센트 커버"],[13,"아기 수납장"],[13,"아기 옷걸이"]]};
+const KEY='babyprep.v1', UI_KEY='babyprep.ui';
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const won=n=>n.toLocaleString('ko-KR')+'원';
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+
+function fromTemplate(){
+  return TEMPLATE.items.map((it,i)=>({id:'t'+i,cat:TEMPLATE.cats[it[0]],name:it[1],when:it[2]||'',tip:it[3]||'',brand:'',price:null,priceText:'',qty:'',note:'',done:false,order:(i+1)*10}));
+}
+let D, UI={cat:'전체',onlyTodo:false,hideHint:false};
+function load(){
+  try{const raw=localStorage.getItem(KEY);if(raw){const p=JSON.parse(raw);if(p&&Array.isArray(p.items))D=p}}catch(e){}
+  if(!D)D={items:fromTemplate(),due:''};
+  try{Object.assign(UI,JSON.parse(localStorage.getItem(UI_KEY)||'{}'))}catch(e){}
+}
+let storageOk=true;
+function persist(){try{localStorage.setItem(KEY,JSON.stringify(D));storageOk=true}catch(e){if(storageOk)toast('이 브라우저에서는 저장이 안 돼요. 사생활 보호 모드인지 확인해 주세요.');storageOk=false}}
+function persistUI(){try{localStorage.setItem(UI_KEY,JSON.stringify(UI))}catch(e){}}
+function sorted(){return D.items.slice().sort((a,b)=>(a.order||0)-(b.order||0))}
+function cats(){const s=[];for(const it of sorted())if(!s.includes(it.cat))s.push(it.cat);return s}
+
+/* "출산 8M 전" + 예정일 → 2026.02 */
+function whenDate(when){
+  if(!D.due||!when)return '';
+  const due=new Date(D.due+'T00:00:00');if(isNaN(due))return '';
+  const out=[];
+  for(const part of when.split(',')){
+    const p=part.trim();let off=null;
+    if(p==='출산')off=0;
+    else{const m=p.match(/(\d+)\s*M\s*(전|후)/);if(m)off=(m[2]==='전'?-1:1)*Number(m[1])}
+    if(off==null)continue;
+    const d=new Date(due.getFullYear(),due.getMonth()+off,1);
+    out.push(d.getFullYear()+'.'+String(d.getMonth()+1).padStart(2,'0'));
+  }
+  return out.join(', ');
+}
+function priceLabel(i){return i.price!=null?won(i.price):(i.priceText||'')}
+
+function render(){
+  const all=D.items, done=all.filter(i=>i.done).length, total=all.reduce((a,i)=>a+(i.price||0),0);
+  const dueTxt=D.due?`<span>예정일 <b>${D.due.replace(/-/g,'.')}</b></span>`:'';
+  $('#sum').innerHTML=`<span><b>${all.length}</b>개 품목</span><span>체크 <b>${done}</b>개</span><span>금액 합계 <b>${won(total)}</b></span>${dueTxt}`;
+  $('#bar').style.width=all.length?(done/all.length*100)+'%':'0';
+  const cs=cats(); if(UI.cat!=='전체'&&!cs.includes(UI.cat))UI.cat='전체';
+  $('#chips').innerHTML=['전체',...cs].map(c=>`<button class="chip" type="button" data-cat="${esc(c)}" aria-pressed="${c===UI.cat}">${esc(c)}</button>`).join('');
+  $('#onlyTodo').checked=UI.onlyTodo;
+  const q=$('#q').value.trim().toLowerCase(), list=sorted();
+  let html='';
+  for(const c of cs){
+    if(UI.cat!=='전체'&&c!==UI.cat)continue;
+    const inCat=list.filter(i=>i.cat===c);
+    const vis=inCat.filter(i=>(!UI.onlyTodo||!i.done)&&(!q||[i.name,i.brand,i.note,i.tip].join(' ').toLowerCase().includes(q)));
+    if(!vis.length&&(q||UI.onlyTodo))continue;
+    const sub=inCat.reduce((a,i)=>a+(i.price||0),0), cd=inCat.filter(i=>i.done).length;
+    html+=`<section><div class="ch"><h2>${esc(c)}</h2><span>${cd}/${inCat.length}${sub?' · '+won(sub):''}</span></div><div class="list">`;
+    for(const i of vis){
+      const wd=whenDate(i.when);
+      const meta=[i.brand&&esc(i.brand),priceLabel(i)&&esc(priceLabel(i)),i.qty&&esc(i.qty)+'개',i.when&&`<span class="when">${esc(i.when)}${wd?' · '+wd:''}</span>`].filter(Boolean).map(x=>`<span>${x}</span>`).join('');
+      html+=`<div class="row${i.done?' done':''}">
+        <button class="ck" type="button" role="checkbox" aria-checked="${!!i.done}" aria-label="${esc(i.name)} 체크" data-ck="${i.id}">${i.done?'✓':''}</button>
+        <button class="main" type="button" data-ed="${i.id}"><div class="nm">${esc(i.name)||'(이름 없음)'}${i.note?`<span class="tag">${esc(i.note)}</span>`:''}</div>${meta?`<div class="meta">${meta}</div>`:''}${i.tip?`<div class="tip">${esc(i.tip)}</div>`:''}</button></div>`;
+    }
+    html+=`<button class="addrow" type="button" data-add="${esc(c)}">+ ${esc(c)}에 추가</button></div></section>`;
+  }
+  $('#out').innerHTML=html||(all.length?'<p class="status">조건에 맞는 품목이 없어요.</p>':'<p class="status">목록이 비어 있어요. 아래 “+ 품목 추가”로 첫 품목을 넣어 보세요.</p>');
+}
+
+let toastT;
+function toast(m){let t=$('#toast');if(!t){t=document.createElement('div');t.id='toast';t.className='toast';t.setAttribute('role','status');document.body.append(t)}t.textContent=m;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,2600)}
+function closeSheet(){$('#sheetHost').innerHTML=''}
+function sheet(html){$('#sheetHost').innerHTML=`<div class="scrim" id="scrim">${html}</div>`;$('#scrim').addEventListener('click',e=>{if(e.target.id==='scrim')closeSheet()})}
+
+document.addEventListener('click',e=>{
+  const t=e.target.closest('[data-cat],[data-ck],[data-ed],[data-add]');if(!t)return;
+  if(t.dataset.cat!=null){UI.cat=t.dataset.cat;persistUI();render();window.scrollTo({top:0});return}
+  if(t.dataset.ck){const it=D.items.find(i=>i.id===t.dataset.ck);if(it){it.done=!it.done;persist();render()}return}
+  if(t.dataset.ed){editSheet(D.items.find(i=>i.id===t.dataset.ed));return}
+  if(t.dataset.add!=null)editSheet(null,t.dataset.add);
+});
+$('#fab').onclick=()=>editSheet(null,UI.cat!=='전체'?UI.cat:(cats()[0]||''));
+$('#q').addEventListener('input',render);
+$('#onlyTodo').addEventListener('change',e=>{UI.onlyTodo=e.target.checked;persistUI();render()});
+$('#settingsBtn').onclick=settingsSheet;
+
+function editSheet(it,defCat){
+  const isNew=!it; it=it||{cat:defCat||'',name:'',brand:'',price:null,priceText:'',qty:'',note:'',when:'',tip:'',done:false};
+  const cs=cats();
+  sheet(`<form class="sheet" id="sf" autocomplete="off">
+    <h3>${isNew?'품목 추가':'품목 수정'}</h3>
+    <div class="grid">
+      <label class="f full">품목<input id="f-name" value="${esc(it.name)}" required></label>
+      <label class="f">분류<select id="f-cat">${cs.map(c=>`<option ${c===it.cat?'selected':''}>${esc(c)}</option>`).join('')}<option value="__new">+ 새 분류…</option></select></label>
+      <label class="f" id="f-newcat-w" hidden>새 분류 이름<input id="f-newcat"></label>
+      <label class="f">브랜드<input id="f-brand" value="${esc(it.brand)}"></label>
+      <label class="f">금액 (원)<input id="f-price" inputmode="numeric" value="${esc(it.price!=null?it.price:it.priceText)}"></label>
+      <label class="f">수량<input id="f-qty" value="${esc(it.qty)}"></label>
+      <label class="f">비고<input id="f-note" value="${esc(it.note)}" placeholder="선물 · 당근 · 대여"></label>
+      <label class="f full">구매 시기<input id="f-when" value="${esc(it.when)}" placeholder="예: 출산 2M 전, 출산 3M 후"></label>
+      <label class="f full">꿀팁 · 메모<textarea id="f-tip" rows="3">${esc(it.tip)}</textarea></label>
+    </div>
+    <div class="acts">
+      <button class="btn" type="button" id="cancel">닫기</button>
+      ${isNew?'':'<button class="btn del" type="button" id="del">삭제</button>'}
+      <button class="btn pri" type="submit">저장</button>
+    </div>
+    <div id="cf"></div>
+  </form>`);
+  $('#cancel').onclick=closeSheet;
+  const sel=$('#f-cat');sel.onchange=()=>{$('#f-newcat-w').hidden=sel.value!=='__new'};
+  if(!cs.length){sel.value='__new';$('#f-newcat-w').hidden=false}
+  if(!isNew)$('#del').onclick=()=>{
+    $('#cf').innerHTML=`<div class="confirm">“${esc(it.name)}”을(를) 지울까요? <button class="btn del" type="button" id="yes">지우기</button></div>`;
+    $('#yes').onclick=()=>{D.items=D.items.filter(x=>x.id!==it.id);persist();render();closeSheet();toast('지웠어요')};
+  };
+  $('#sf').onsubmit=e=>{
+    e.preventDefault();
+    let cat=sel.value==='__new'?$('#f-newcat').value.trim():sel.value; if(!cat)cat='기타';
+    const raw=$('#f-price').value.trim(), digits=raw.replace(/[,원\s]/g,''), num=/^\d+$/.test(digits)?Number(digits):null;
+    let order=it.order;
+    if(isNew||cat!==it.cat){const inCat=D.items.filter(i=>i.cat===cat&&i.id!==it.id);order=inCat.length?Math.max(...inCat.map(i=>i.order||0))+0.5:D.items.reduce((a,i)=>Math.max(a,i.order||0),0)+10}
+    const d={cat,name:$('#f-name').value.trim(),brand:$('#f-brand').value.trim(),price:num,priceText:num==null?raw:'',qty:$('#f-qty').value.trim(),note:$('#f-note').value.trim(),when:$('#f-when').value.trim(),tip:$('#f-tip').value.trim(),done:!!it.done,order};
+    if(isNew)D.items.push({id:uid(),...d});else Object.assign(D.items.find(x=>x.id===it.id),d);
+    persist();
+    if(isNew&&UI.cat!=='전체'&&UI.cat!==cat){UI.cat=cat;persistUI()}
+    render();closeSheet();toast(isNew?'추가했어요':'저장했어요');
+  };
+  setTimeout(()=>$('#f-name').focus(),60);
+}
+
+function settingsSheet(){
+  sheet(`<div class="sheet">
+    <h3>설정</h3>
+    <label class="f">출산 예정일<input type="date" id="s-due" value="${esc(D.due||'')}"></label>
+    <p class="small">넣어 두면 “출산 8M 전” 같은 구매 시기 옆에 실제 연·월이 함께 보여요.</p>
+    <h4>백업</h4>
+    <div class="stack">
+      <button class="btn" type="button" id="s-export">백업 파일 저장</button>
+      <label class="btn" style="text-align:center">백업 파일 불러오기<input type="file" id="s-import" accept="application/json,.json" hidden></label>
+    </div>
+    <p class="small">목록은 이 폰의 브라우저에만 저장돼요. 폰을 바꾸거나 다른 기기로 옮길 때 백업 파일을 저장해서 새 기기에서 불러오세요.</p>
+    <h4>초기화</h4>
+    <button class="btn del" type="button" id="s-reset">처음 목록으로 되돌리기</button>
+    <div id="s-cf"></div>
+    <div class="acts"><button class="btn pri" type="button" id="s-close">닫기</button></div>
+  </div>`);
+  $('#s-due').onchange=e=>{D.due=e.target.value;persist();render()};
+  $('#s-close').onclick=closeSheet;
+  $('#s-export').onclick=()=>{
+    const blob=new Blob([JSON.stringify({app:'babyprep',version:1,savedAt:new Date().toISOString(),...D},null,1)],{type:'application/json'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+    a.download='아기준비물_백업_'+new Date().toISOString().slice(0,10)+'.json';document.body.append(a);a.click();a.remove();
+    setTimeout(()=>URL.revokeObjectURL(a.href),4000);toast('백업 파일을 저장했어요');
+  };
+  $('#s-import').onchange=e=>{
+    const f=e.target.files[0];if(!f)return;const r=new FileReader();
+    r.onload=()=>{try{const p=JSON.parse(r.result);if(!p||!Array.isArray(p.items))throw 0;
+      D={items:p.items.filter(i=>i&&typeof i.name==='string').map(i=>({id:String(i.id||uid()),cat:String(i.cat||'기타'),name:i.name,brand:String(i.brand||''),price:typeof i.price==='number'?i.price:null,priceText:String(i.priceText||''),qty:String(i.qty||''),note:String(i.note||''),when:String(i.when||''),tip:String(i.tip||''),done:!!i.done,order:Number(i.order)||0})),due:typeof p.due==='string'?p.due:''};
+      persist();render();closeSheet();toast(`${D.items.length}개 품목을 불러왔어요`)}catch(_){toast('이 앱의 백업 파일이 아니에요. 파일을 다시 확인해 주세요.')}};
+    r.readAsText(f);
+  };
+  $('#s-reset').onclick=()=>{
+    $('#s-cf').innerHTML=`<div class="confirm">체크와 직접 고친 내용이 모두 사라져요. 되돌릴까요? <button class="btn del" type="button" id="s-yes">되돌리기</button></div>`;
+    $('#s-yes').onclick=()=>{D={items:fromTemplate(),due:D.due};persist();render();closeSheet();toast('처음 목록으로 되돌렸어요')};
+  };
+}
+
+/* 홈 화면 추가 안내 */
+let deferredPrompt=null;
+const standalone=window.matchMedia('(display-mode: standalone)').matches||navigator.standalone;
+function showHint(){
+  if(standalone||UI.hideHint)return;
+  const h=$('#installHint'), ios=/iphone|ipad|ipod/i.test(navigator.userAgent);
+  const msg=deferredPrompt?'홈 화면에 추가하면 앱처럼 바로 열 수 있어요.':ios?'Safari 아래쪽 공유 버튼 → “홈 화면에 추가”를 누르면 앱처럼 쓸 수 있어요.':'브라우저 메뉴(⋮) → “홈 화면에 추가” 또는 “앱 설치”를 누르면 앱처럼 쓸 수 있어요.';
+  h.innerHTML=`<p>${msg}</p>${deferredPrompt?'<button class="go" type="button" id="h-install">추가</button>':''}<button type="button" id="h-close" aria-label="안내 닫기">닫기</button>`;
+  h.hidden=false;
+  $('#h-close').onclick=()=>{UI.hideHint=true;persistUI();h.hidden=true};
+  if(deferredPrompt)$('#h-install').onclick=async()=>{deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;h.hidden=true};
+}
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;showHint()});
+if('serviceWorker' in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+
+load();render();showHint();
+</script>
+</body>
+</html>
